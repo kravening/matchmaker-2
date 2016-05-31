@@ -2,138 +2,74 @@
 using System.Collections;
 
 public class PlayerInputs : MonoBehaviour {
+	private PlayerMovement _playerMovement;
 
-   
+	//DPAD
+	float dPadX; //DPAD X AXIS
+	float dPadY; //DPAD Y AXIS
 
-    void Start()
-    {
+	//ANALOG STICKS
+	float leftX; //LEFT ANALOG X AXIS
+	float leftY; //LEFT ANALOG Y AXIS
+	float rightX; //RIGHT ANALOG X AXIS
+	float rightY; //RIGHT ANALOG Y AXIS
 
-    }
+	//TRIGGERS
+	float leftTrigger;
+	float rightTrigger;
 
+	//BUTTONS
+	bool aButton;
+	bool bButton;
+	bool yButton;
+	bool xButton;
+
+	Vector2 leftStickVector = new Vector2(0,0);
+
+	//MODIFIERS
+	float deadzone = 0.25f;
+	void Start(){
+		_playerMovement = GetComponent<PlayerMovement> ();
+	}
 	void Update () 
     {
-        XboxControllerInput();
+        UpdateInput();
     }
 
 
-    void XboxControllerInput()
+    void UpdateInput()
     {
         //DPAD
-        float dpadX = Input.GetAxis(InputAxes.DPADX); //DPAD X AXIS
+        dPadX  = Input.GetAxis(InputAxes.DPADX); //DPAD X AXIS
+		dPadY  = Input.GetAxis(InputAxes.DPADY); //DPAD Y AXIS
 
-        if (dpadX > 0)
-        {
+		//ANALOG STICKS
+		leftX  = Input.GetAxis(InputAxes.LEFTX); //LEFT ANALOG X AXIS
+		leftY  = Input.GetAxis(InputAxes.LEFTY); //LEFT ANALOG Y AXIS
+		rightX = Input.GetAxis(InputAxes.RIGHTX); //RIGHT ANALOG X AXIS
+		rightY = Input.GetAxis(InputAxes.RIGHTY); //RIGHT ANALOG Y AXIS
 
-        }
-        else if (dpadX < 0)
-        {
+		if (leftX >= deadzone || leftX <= -deadzone) {
+			leftStickVector.x = leftX;
+		} else {
+			leftStickVector.x = 0;
+		}
+		if (leftY >= deadzone || leftY <= -deadzone) {
+			leftStickVector.y = leftY;
+		} else {
+			leftStickVector.y = 0;
+		}
 
-        }
+		//TRIGGERS
+		leftTrigger = Input.GetAxis(InputAxes.LT);
+		rightTrigger = Input.GetAxis(InputAxes.RT);
 
-        float dpadY = Input.GetAxis(InputAxes.DPADY); //DPAD Y AXIS
+		//BUTTONS
+		aButton = Input.GetButton (InputAxes.A);
+		bButton = Input.GetButton (InputAxes.B);
+		yButton = Input.GetButton (InputAxes.Y);
+		xButton = Input.GetButton (InputAxes.X);
 
-        if (dpadY > 0)
-        {
-
-        }
-        else if (dpadY < 0)
-        {
-
-        }
-
-        //ANALOG STICKS
-        float leftX = Input.GetAxis(InputAxes.LEFTX); //LEFT ANALOG X AXIS
-        float leftY = Input.GetAxis(InputAxes.LEFTY); //LEFT ANALOG Y AXIS
-
-        Vector3 inputVector = new Vector3(Input.GetAxis(InputAxes.LEFTX),0, -Input.GetAxis(InputAxes.LEFTY));
-
-        if (leftX != 0 || leftY != 0)
-        {
-           
-        }
-
-        float rightX = Input.GetAxis(InputAxes.RIGHTX); //RIGHT ANALOG X AXIS
-        float rightY = Input.GetAxis(InputAxes.RIGHTY); //RIGHT ANALOG X AXIS
-        
-        if (rightX != 0)
-        {
-            
-        }
-
-        if (rightY != 0)
-        {
-            
-        }
-
-        if (Input.GetButtonDown(InputAxes.L3))
-        {
-
-        }
-
-        if (Input.GetButtonDown(InputAxes.R3))
-        {
-
-        }
-
-        //FACE BUTTONS
-        if (Input.GetButtonDown(InputAxes.A))
-        {
-
-        }
-
-        if (Input.GetButtonDown(InputAxes.B))
-        {
-
-        }
-        
-        if (Input.GetButtonDown(InputAxes.X))
-        {
-         
-        }
-        if (Input.GetButtonDown(InputAxes.Y))
-        {
-
-        }
-
-        //BUMPERS & TRIGGERS
-
-        //BUMPERS
-        if (Input.GetButton(InputAxes.LB))
-        {
-
-        }
-        if (Input.GetButtonDown(InputAxes.RB))
-        {
-
-        }
-
-        //TRIGGERS
-        float leftTrigger = Input.GetAxis(InputAxes.LT);
-        float rightTrigger = Input.GetAxis(InputAxes.RT);
-
-        if (leftTrigger > 0)
-        {
-
-        }
-        if (rightTrigger > 0)
-        {
-
-        }
-
-        //START & BACK
-        if (Input.GetButtonDown(InputAxes.START))
-        {
-
-        }
-        if (Input.GetButtonDown(InputAxes.BACK))
-        {
-
-        }
-
-        //Idle
-        if (!Input.anyKeyDown && leftY == 0 && leftX == 0)
-        {
-
-        }
+		_playerMovement.ProcessInput (leftStickVector, aButton);
     }
 }
