@@ -2,20 +2,20 @@
 using System.Collections;
 
 public class Teleporter : MonoBehaviour {
-    private CalculateDistance _calculateDistance;
-    private bool _canTeleport;
-    private Transform _player;
-    [SerializeField]private Transform _teleportTo;
+    [SerializeField]private Transform           _teleportTo;
+                    private CalculateDistance   _calculateDistance;
+                    private bool                _canTeleport;
+                    private Transform           _player;
+    
     // Use this for initialization
 	
     void Start () {
-        _player = GameObject.Find("Player").transform;
-        _calculateDistance = GetComponent<CalculateDistance>();        
+        _player             = GameObject.Find("Player").transform;
+        _calculateDistance  = GetComponent<CalculateDistance>();        
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        Debug.Log(_calculateDistance.Distance + "it works");
         EnableTeleport();
         Teleport();
 	}
@@ -30,9 +30,8 @@ public class Teleporter : MonoBehaviour {
 
     void EnableTeleport()
     {
-        if (_calculateDistance.Distance < 1)
+        if (_calculateDistance.Distance < 0.4f)
         {
-            //enable UI element
             _canTeleport = true;
         }
         else
@@ -44,7 +43,7 @@ public class Teleporter : MonoBehaviour {
     IEnumerator Teleporting()
     {
         //spawn particle
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(1.5f);
         if (_canTeleport)
         {
             _player.position = _teleportTo.position;

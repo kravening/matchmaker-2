@@ -1,22 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
-public class PatrolState : MonoBehaviour {
+public class PatrolState : IEnemyState {
 
-   /* void ChangeState()
+    private readonly StatePatternEnemy enemy;
+    [SerializeField]private List<Transform> _waypoints;
+
+    public void ChangeState()
     {
 
     }
-    void ToPatrol() 
+    public void ToPatrol() 
     {
  
     }
-    void ToAlert()
+    public void ToAlert()
     {
 
     }
-    void ToFollowPlayer()
+    public void ToFollowPlayer()
     {
 
-    }*/
+    }
 }
