@@ -40,14 +40,14 @@ public class PlayerInputs : MonoBehaviour {
     void UpdateInput()
     {
         //DPAD
-        dPadX  = Input.GetAxis(InputAxes.DPADX); //DPAD X AXIS
-		dPadY  = Input.GetAxis(InputAxes.DPADY); //DPAD Y AXIS
+        dPadX  = Input.GetAxisRaw(InputAxes.DPADX); //DPAD X AXIS
+		dPadY  = Input.GetAxisRaw(InputAxes.DPADY); //DPAD Y AXIS
 
 		//ANALOG STICKS
-		leftX  = Input.GetAxis(InputAxes.LEFTX); //LEFT ANALOG X AXIS
-		leftY  = Input.GetAxis(InputAxes.LEFTY); //LEFT ANALOG Y AXIS
-		rightX = Input.GetAxis(InputAxes.RIGHTX); //RIGHT ANALOG X AXIS
-		rightY = Input.GetAxis(InputAxes.RIGHTY); //RIGHT ANALOG Y AXIS
+		leftX  = Input.GetAxisRaw(InputAxes.LEFTX); //LEFT ANALOG X AXIS
+		leftY  = Input.GetAxisRaw(InputAxes.LEFTY); //LEFT ANALOG Y AXIS
+		rightX = Input.GetAxisRaw(InputAxes.RIGHTX); //RIGHT ANALOG X AXIS
+		rightY = Input.GetAxisRaw(InputAxes.RIGHTY); //RIGHT ANALOG Y AXIS
 
 		if (leftX >= deadzone || leftX <= -deadzone) {
 			leftStickVector.x = leftX;
@@ -61,8 +61,8 @@ public class PlayerInputs : MonoBehaviour {
 		}
 
 		//TRIGGERS
-		leftTrigger = Input.GetAxis(InputAxes.LT);
-		rightTrigger = Input.GetAxis(InputAxes.RT);
+		leftTrigger = Input.GetAxisRaw(InputAxes.LT);
+		rightTrigger = Input.GetAxisRaw(InputAxes.RT);
 
 		//BUTTONS
 		aButton = Input.GetButton (InputAxes.A);
