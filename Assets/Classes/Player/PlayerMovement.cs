@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class PlayerMovement : MonoBehaviour {
 	CharacterController _cc;
@@ -50,10 +51,12 @@ public class PlayerMovement : MonoBehaviour {
 	float slideControllableSpeed = 5f;
 
 	//Push
-	float pushPower = 0.5f;
+	float _pushPower = 0.5f;
 
 	//gravity
-	float gravity = 100f;
+	float _currentGravity;
+	float _maxGravity = 200f;
+	float _gravityAcceleration = 50f;
 
 	//---------------------------------------------------------
 
@@ -91,7 +94,6 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-
 	}
 
 	public void ProcessInput(Vector2 leftStick, bool aButton){
@@ -107,20 +109,27 @@ public class PlayerMovement : MonoBehaviour {
 		Vector3 movement = _moveDirection * _moveSpeed + new Vector3 ( 0, _verticalSpeed, 0 ) + _inAirVelocity; // stores direction with speed (h,v)
 		movement *= Time.deltaTime;													// set movement to delta time for consistent speed
 
-		_objectJumpContactNormal = Vector3.zero;										// reset vectors back to zero
+		_objectJumpContactNormal = Vector3.zero;									// reset vectors back to zero
 
 		_cc.Move ( movement );
 
 		if ( _cc.isGrounded ) 														// character is on the ground (set rotation, translation, direction, speed)
 		{
-			transform.rotation = Quaternion.LookRotation ( _moveDirection );			// set rotation to the moveDirection
-			_inAirVelocity = new Vector3(0,-0.1f,0);										// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth			
-			if ( _moveSpeed < 0.15 ) 												// quick check on movespeed and turn it off (0), if it's
-				_moveSpeed = 0;														// less than .15
+			transform.rotation = Quaternion.LookRotation ( _moveDirection );		// set rotation to the moveDirection
+			_inAirVelocity = new Vector3(0,-0.1f,0);								// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth			
+			if (_moveSpeed < 0.15) {												// quick check on movespeed and turn it off (0), if it's
+				_moveSpeed = 0;	
+			} else {
+				//moving on teh ground
+				//spawn particles
+				//play animation
+				//more speedchecks for animations
+				//check rotation for lean (relative to camera? & horizontal);
+			}
 		}
 		else 																		// player is in the air
 		{
-			transform.rotation = Quaternion.LookRotation ( _moveDirection );			// quick adjustment for jumping off wall, turn player around in air
+			transform.rotation = Quaternion.LookRotation ( _moveDirection );		//turn player around in air
 		}
 
 	}		
@@ -154,9 +163,20 @@ public class PlayerMovement : MonoBehaviour {
 	void UpdateGravity(){
 		if (_cc.isGrounded) {
 			_verticalSpeed = 0f;
+			_currentGravity = 0f;
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				_verticalSpeed = 15f;
+			}
 		} else {
-			_verticalSpeed -= gravity * Time.deltaTime;	
+			_currentGravity += _gravityAcceleration * Time.deltaTime;
+			_currentGravity = Mathf.Clamp (_currentGravity, 0, _maxGravity);
+			_verticalSpeed -= _currentGravity * Time.deltaTime;
 		}
 
+	}
+
+	void Jump(){
+		_verticalSpeed = 25;
+		//spawn particles
 	}
 }
