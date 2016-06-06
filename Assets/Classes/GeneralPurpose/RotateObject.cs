@@ -7,7 +7,8 @@ public class RotateObject : MonoBehaviour {
     [SerializeField]private float _rotateY;
     [SerializeField]private float _rotateZ;
 
-	void Update () {
+	void Update () 
+    {
         RotatePlatform();
 	}
 

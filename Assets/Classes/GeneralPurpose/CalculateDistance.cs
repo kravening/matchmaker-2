@@ -9,7 +9,8 @@ public class CalculateDistance : MonoBehaviour {
                         get { return _distance; }
                     }
 
-	void Update () {
+	void Update () 
+    {
         CheckDistance();
 	}
 

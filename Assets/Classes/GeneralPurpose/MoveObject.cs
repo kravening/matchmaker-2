@@ -3,46 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class MoveObject : MonoBehaviour {
-    [SerializeField]private List<Transform> _objects;
+
+    [SerializeField]private List<Transform> _waypoints;
     [SerializeField]private float           _defaultSpeed;
     [SerializeField]private float           _speed;
                     private int             _index;
-                    //private Transform _target;
-                    private float _distance;
+                    private float           _distance;
 
-	void Update () {
+	void Update () 
+    {
         Move();
 	}
 
     void Move()
     {
-        //_target = _objects[_index];
-        Deccelarate(_objects[_index]);
+        Deccelarate(_waypoints[_index]);
 
-        if (_index == _objects.Count)
+        if (_index == _waypoints.Count)
         {
             _index = 0;
             _speed = _defaultSpeed;
         }
         else
         {
-            transform.position = Vector3.MoveTowards(transform.position, _objects[_index].position, _speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, _waypoints[_index].position, _speed * Time.deltaTime);
         }
 
-        if (transform.position == _objects[_index].position)
+        if (transform.position == _waypoints[_index].position)
         {
-            /*if (_index < _objects.Count)
-            {
-                _index++;
-            }*/
-
-            if (_index == _objects.Count)
+            if (_index == _waypoints.Count)
             {
                 _index = 0;
             }
-
-
         }
+
         _speed = _defaultSpeed;
     }
 
