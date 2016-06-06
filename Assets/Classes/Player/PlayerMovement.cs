@@ -55,8 +55,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	//gravity
 	float _currentGravity;
-	float _maxGravity = 100f;
-	float _gravityAcceleration = 100f;
+	float _maxGravity = 50f;
+	float _gravityAcceleration = 50f;
 
 	//---------------------------------------------------------
 
@@ -110,9 +110,9 @@ public class PlayerMovement : MonoBehaviour {
 		UpdateMoveDirection ();
 		UpdateGravity ();
 		Vector3 movement = _moveDirection * _moveSpeed + new Vector3 ( 0, _verticalSpeed, 0 ) + _inAirVelocity; // stores direction with speed (h,v)
-		movement *= Time.deltaTime;													// set movement to delta time for consistent speed
+		movement *= Time.deltaTime;													// delta time for consistent speed
 
-		_objectJumpContactNormal = Vector3.zero;									// reset vectors back to zero
+		//_objectJumpContactNormal = Vector3.zero;									// reset vectors back to zero
 		transform.rotation = Quaternion.LookRotation ( _moveDirection );
 		_cc.Move ( movement );
 
