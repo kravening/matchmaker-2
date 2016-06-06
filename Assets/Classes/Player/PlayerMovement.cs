@@ -55,8 +55,8 @@ public class PlayerMovement : MonoBehaviour {
 
 	//gravity
 	float _currentGravity;
-	float _maxGravity = 200f;
-	float _gravityAcceleration = 50f;
+	float _maxGravity = 100f;
+	float _gravityAcceleration = 100f;
 
 	//---------------------------------------------------------
 
@@ -71,7 +71,6 @@ public class PlayerMovement : MonoBehaviour {
 	string _jumpFromObjectTag = "Wall"; //TODO use tag from tag class
 
 	//Vectors
-
 	Vector3 _playerStartPosition;
 	Vector3 _inAirVelocity = Vector3.zero;
 	Vector3 _objectJumpContactNormal;
@@ -82,6 +81,10 @@ public class PlayerMovement : MonoBehaviour {
 	//Transforms
 	Transform _pushObject = null;
 	Transform _grabObject = null;
+
+	//Booleans
+	bool jump;
+	bool holdPreviousInput;
 
 	//LayerMasks
 	LayerMask pushLayers = -1;
@@ -98,25 +101,23 @@ public class PlayerMovement : MonoBehaviour {
 
 	public void ProcessInput(Vector2 leftStick, bool aButton){
 		_axis = leftStick;
+		jump = aButton;
 		Movement (_axis);
 	}
 
 	void Movement(Vector2 moveDir){
-		UpdateGravity ();
 		UpdateTargetDirection ();
 		UpdateMoveDirection ();
-
+		UpdateGravity ();
 		Vector3 movement = _moveDirection * _moveSpeed + new Vector3 ( 0, _verticalSpeed, 0 ) + _inAirVelocity; // stores direction with speed (h,v)
 		movement *= Time.deltaTime;													// set movement to delta time for consistent speed
 
 		_objectJumpContactNormal = Vector3.zero;									// reset vectors back to zero
-
+		transform.rotation = Quaternion.LookRotation ( _moveDirection );
 		_cc.Move ( movement );
 
-		if ( _cc.isGrounded ) 														// character is on the ground (set rotation, translation, direction, speed)
-		{
-			transform.rotation = Quaternion.LookRotation ( _moveDirection );		// set rotation to the moveDirection
-			_inAirVelocity = new Vector3(0,-0.1f,0);								// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth			
+		if (_cc.isGrounded) { 														// character is on the ground (set rotation, translation, direction, speed)
+			_inAirVelocity = new Vector3 (0, -0.1f, 0);								// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth			
 			if (_moveSpeed < 0.15) {												// quick check on movespeed and turn it off (0), if it's
 				_moveSpeed = 0;	
 			} else {
@@ -126,10 +127,8 @@ public class PlayerMovement : MonoBehaviour {
 				//more speedchecks for animations
 				//check rotation for lean (relative to camera? & horizontal);
 			}
-		}
-		else 																		// player is in the air
-		{
-			transform.rotation = Quaternion.LookRotation ( _moveDirection );		//turn player around in air
+		} else {
+			//player is in the air
 		}
 
 	}		
@@ -164,19 +163,26 @@ public class PlayerMovement : MonoBehaviour {
 		if (_cc.isGrounded) {
 			_verticalSpeed = 0f;
 			_currentGravity = 0f;
-			if (Input.GetKeyDown (KeyCode.Space)) {
-				_verticalSpeed = 15f;
+			if (jump == true && holdPreviousInput == false && _cc.isGrounded) { // get button down
+				holdPreviousInput = true;
+				_verticalSpeed = 25f;
+			} else if(jump == false && holdPreviousInput == true) {
+				holdPreviousInput = false;
 			}
 		} else {
 			_currentGravity += _gravityAcceleration * Time.deltaTime;
 			_currentGravity = Mathf.Clamp (_currentGravity, 0, _maxGravity);
-			_verticalSpeed -= _currentGravity * Time.deltaTime;
+			_verticalSpeed -= _currentGravity * Time.deltaTime * 10;
 		}
 
 	}
 
-	void Jump(){
-		_verticalSpeed = 25;
-		//spawn particles
+	void Jump(bool input){
+		if (input == true && holdPreviousInput == false && _cc.isGrounded) { // get button down
+			holdPreviousInput = true;
+			_verticalSpeed = 25f;
+		} else if(input == false && holdPreviousInput == true) {
+			holdPreviousInput = false;
+		}
 	}
 }
