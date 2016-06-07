@@ -9,15 +9,13 @@ public class Teleporter : MonoBehaviour {
     
     // Use this for initialization
 	
-    void Start () 
-    {
+    void Start () {
         _player             = GameObject.Find("Player").transform;
         _calculateDistance  = GetComponent<CalculateDistance>();        
 	}
 	
 	// Update is called once per frame
-	void Update () 
-    {
+	void Update () {
         EnableTeleport();
         Teleport();
 	}
