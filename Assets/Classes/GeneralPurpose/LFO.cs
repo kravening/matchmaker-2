@@ -78,10 +78,8 @@ public class LFO : MonoBehaviour
 	{// container for extra behaviours
 		if (shape == LFO_Shape.triangle) {
 			triangleOSC ();
-			Debug.Log ("ayy");
 		} else if (shape == LFO_Shape.noise) {
 			NoiseOSC ();
-			Debug.Log ("ayy");
 		}
 		// do some additional things here
 	}

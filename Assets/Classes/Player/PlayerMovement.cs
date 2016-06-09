@@ -13,9 +13,9 @@ public class PlayerMovement : MonoBehaviour {
 
 	//walk speedvv
 	float _tempSpeed;
-	float _targetSpeed = 10f;
+	float _targetSpeed = 20f;
 	float _moveSpeed = 0f;
-	float _speedIdleMax = 0.2f;
+	float _speedIdleMax = 0.15f;
 	float _speedIdleRotate = 1.2f;
 	float _speedWalk = 3f;
 	float _speedJog = 5f;
@@ -28,23 +28,23 @@ public class PlayerMovement : MonoBehaviour {
 	float _speedJumpFromObject = 10f;
 	float _speedCrouch = 0f;
 	float _speedInAir = 1f;
-	float _currentSpeed = 10f;
+	float _currentSpeed = 20f;
 	float _currentSmooth;
 
 	//Smoothing values
-	float _speedSmoothing = 10f;
-	float _speedRotation = 50f;
-	float _smoothDirection = 10f;
+	float _baseSpeedSmoothing = 5f;
+	float _baseSpeedRotation = 20f;
+	float _baseSmoothDirection = 10f;
 
 	//Jump
 	float _currentJumpHeight = 0f;
-	float _jump_1 = 8f; 
-	float _jump_2 = 10f;
-	float _jump_3 = 15f;
-	float _jumpFromCrouch = 14f;
-	float _jumpFromObject = 8f;
-	float jumpComboTime = 1.5f;
-	float jumpDelayTime = 0.5f;
+	float _jump_1 = 25f; 
+	float _jump_2 = 30f;
+	float _jump_3 = 35f;
+	float _jumpFromCrouch = 35f;
+	float _jumpFromObject = 25f;
+	float jumpComboTime = 1f;
+	float jumpDelayTime = 0.1f;
 
 	//Slide
 	float slideThreshold = 0.88f;
@@ -112,14 +112,14 @@ public class PlayerMovement : MonoBehaviour {
 		Vector3 movement = _moveDirection * _moveSpeed + new Vector3 ( 0, _verticalSpeed, 0 ) + _inAirVelocity; // stores direction with speed (h,v)
 		movement *= Time.deltaTime;													// delta time for consistent speed
 
-		//_objectJumpContactNormal = Vector3.zero;									// reset vectors back to zero
 		transform.rotation = Quaternion.LookRotation ( _moveDirection );
 		_cc.Move ( movement );
 
 		if (_cc.isGrounded) { 														// character is on the ground (set rotation, translation, direction, speed)
 			_inAirVelocity = new Vector3 (0, -0.1f, 0);								// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth			
-			if (_moveSpeed < 0.15) {												// quick check on movespeed and turn it off (0), if it's
-				_moveSpeed = 0;	
+			if (_moveSpeed < _speedIdleMax) {												// quick check on movespeed and turn it off (0), if it's
+				_moveSpeed = 0;
+				//idle
 			} else {
 				//moving on teh ground
 				//spawn particles
@@ -144,15 +144,25 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void UpdateMoveDirection(){
-		if (_cc.isGrounded) {
-			if (_targetDirection != Vector3.zero) {
-				_moveDirection = Vector3.Lerp (_moveDirection, _targetDirection, _smoothDirection * Time.deltaTime);
-				_moveDirection = _moveDirection.normalized;
-			}
-			_currentSmooth = _speedSmoothing * Time.deltaTime;
+		//if (_targetDirection != Vector3.zero) {
+			
+			/*if(transform.rotation.y == 180 || transform.rotation.y == -180 || transform.rotation.y == 90 || transform.rotation.y == -90 ){
+				int random = Random.Range (0,1);
+				if (random >= 1) {
+					transform.rotation.y += 0.1f;
+				} else {
+					transform.rotation.y -= 0.1f;
+				}
+			}*/
+			//_moveDirection = Vector3.Lerp (_moveDirection, _targetDirection, _baseSmoothDirection * Time.deltaTime);
+		_moveDirection = _targetDirection;
+			_moveDirection = _moveDirection.normalized;
+		//}
+		_currentSmooth = _baseSpeedSmoothing * Time.deltaTime;
 
-			_targetSpeed = Mathf.Min (_targetDirection.magnitude, 1);
-			_moveSpeed = Mathf.Lerp (_moveSpeed, _targetSpeed * _targetDirection.magnitude * _currentSpeed, _currentSmooth);
+		_targetSpeed = Mathf.Min (_targetDirection.magnitude, 1);
+		_moveSpeed = Mathf.Lerp (_moveSpeed, _targetSpeed * _targetDirection.magnitude * _currentSpeed, _currentSmooth);
+		if (_cc.isGrounded) {
 
 		} else {
 			_inAirVelocity += _targetDirection.normalized * Time.deltaTime * _speedInAir;
@@ -163,25 +173,19 @@ public class PlayerMovement : MonoBehaviour {
 		if (_cc.isGrounded) {
 			_verticalSpeed = 0f;
 			_currentGravity = 0f;
-			if (jump == true && holdPreviousInput == false && _cc.isGrounded) { // get button down
-				holdPreviousInput = true;
-				_verticalSpeed = 25f;
-			} else if(jump == false && holdPreviousInput == true) {
-				holdPreviousInput = false;
-			}
+			JumpCheck();
 		} else {
 			_currentGravity += _gravityAcceleration * Time.deltaTime;
 			_currentGravity = Mathf.Clamp (_currentGravity, 0, _maxGravity);
 			_verticalSpeed -= _currentGravity * Time.deltaTime * 10;
 		}
-
 	}
 
-	void Jump(bool input){
-		if (input == true && holdPreviousInput == false && _cc.isGrounded) { // get button down
+	void JumpCheck(){
+		if (jump == true && holdPreviousInput == false && _cc.isGrounded) { // get button down
 			holdPreviousInput = true;
 			_verticalSpeed = 25f;
-		} else if(input == false && holdPreviousInput == true) {
+		} else if(jump == false && holdPreviousInput == true) {
 			holdPreviousInput = false;
 		}
 	}

@@ -10,7 +10,7 @@ public class Teleporter : MonoBehaviour {
     // Use this for initialization
 	
     void Start () {
-        _player             = GameObject.Find("Player").transform;
+		_player = GameObject.FindGameObjectWithTag (Tags.PLAYER).transform;
         _calculateDistance  = GetComponent<CalculateDistance>();        
 	}
 	
@@ -30,7 +30,7 @@ public class Teleporter : MonoBehaviour {
 
     void EnableTeleport()
     {
-        if (_calculateDistance.Distance < 0.4f)
+		if (_calculateDistance.CheckDistance(_player) < 1)
         {
             _canTeleport = true;
         }
