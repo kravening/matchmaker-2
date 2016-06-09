@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour {
 
@@ -35,6 +36,6 @@ public class PauseMenu : MonoBehaviour {
 
 	public void Retry()
 	{
-		Application.LoadLevel(0);
+		SceneManager.LoadScene(0);
 	}
 }

@@ -19,16 +19,15 @@ public class PlayerCollisions : MonoBehaviour {
 
     void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Platform")
+		if (other.tag == "Platform" || other.tag == "Sticky_Platform")
         {
-            Debug.Log("parented");
             transform.parent = other.transform;
         }
     }
 
     void OnTriggerExit(Collider other)
     {
-        if (other.tag == "Platform")
+		if (other.tag == "Platform" || other.tag == "Sticky_Platform")
         {
             transform.parent = null;
         }

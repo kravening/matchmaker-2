@@ -2,24 +2,9 @@
 using System.Collections;
 
 public class CalculateDistance : MonoBehaviour {
-    [SerializeField]private Transform   _otherObject;
-                    private float       _distance;
-                    public float Distance
-                    {
-                        get { return _distance; }
-                    }
 
-	void Update () 
+	public float CheckDistance(Transform _target)
     {
-        CheckDistance();
-	}
-
-    void CheckDistance()
-    {
-        if (_otherObject)
-        {
-            _distance = Vector3.Distance(_otherObject.position, transform.position);
-            Debug.Log(_distance);
-        }
+			return Vector3.Distance(_target.position, transform.position);
     }
 }
