@@ -1,32 +1,24 @@
 fileFormatVersion: 2
-guid: ae5fe60782adb5843bbf33009e93cf2e
-timeCreated: 1465754844
+guid: 3c18a70e8915f3a46886e68b8d3896c5
+timeCreated: 1465803871
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
-    100002: Cube
-    100004: Cube_1
-    100006: Cube_2
-    100008: Cube_3
+    100002: Lowpoly:ZBrush_defualt_group
+    100004: group
+    100006: ice:Group47269
     400000: //RootNode
-    400002: Cube
-    400004: Cube_1
-    400006: Cube_2
-    400008: Cube_3
-    2300000: Cube
-    2300002: Cube_1
-    2300004: Cube_2
-    2300006: Cube_3
-    3300000: Cube
-    3300002: Cube_1
-    3300004: Cube_2
-    3300006: Cube_3
-    4300000: Cube_3
-    4300002: Cube_1
-    4300004: Cube
-    4300006: Cube_2
+    400002: Lowpoly:ZBrush_defualt_group
+    400004: group
+    400006: ice:Group47269
+    2300000: Lowpoly:ZBrush_defualt_group
+    2300002: ice:Group47269
+    3300000: Lowpoly:ZBrush_defualt_group
+    3300002: ice:Group47269
+    4300000: Lowpoly:ZBrush_defualt_group
+    4300002: ice:Group47269
     9500000: //RootNode
   materials:
     importMaterials: 1
@@ -52,7 +44,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 1500
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1

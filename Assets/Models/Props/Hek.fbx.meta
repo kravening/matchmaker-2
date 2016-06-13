@@ -1,32 +1,38 @@
 fileFormatVersion: 2
-guid: ae5fe60782adb5843bbf33009e93cf2e
-timeCreated: 1465754844
+guid: ea4c9e289b7772b4bb4545429a1f719a
+timeCreated: 1465547050
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: //RootNode
-    100002: Cube
-    100004: Cube_1
-    100006: Cube_2
-    100008: Cube_3
-    400000: //RootNode
-    400002: Cube
-    400004: Cube_1
-    400006: Cube_2
-    400008: Cube_3
-    2300000: Cube
-    2300002: Cube_1
-    2300004: Cube_2
-    2300006: Cube_3
-    3300000: Cube
-    3300002: Cube_1
-    3300004: Cube_2
-    3300006: Cube_3
-    4300000: Cube_3
-    4300002: Cube_1
-    4300004: Cube
-    4300006: Cube_2
+    100000: Cube_51
+    100002: Cube_52
+    100004: Cube_53
+    100006: Cube_54
+    100008: Cube_55
+    100010: //RootNode
+    400000: Cube_51
+    400002: Cube_52
+    400004: Cube_53
+    400006: Cube_54
+    400008: Cube_55
+    400010: //RootNode
+    2300000: Cube_51
+    2300002: Cube_52
+    2300004: Cube_53
+    2300006: Cube_54
+    2300008: Cube_55
+    3300000: Cube_51
+    3300002: Cube_52
+    3300004: Cube_53
+    3300006: Cube_54
+    3300008: Cube_55
+    4300000: Cube_55
+    4300002: Cube_54
+    4300004: Cube_53
+    4300006: Cube_52
+    4300008: Cube_51
+    7400000: C4D Animation Take
     9500000: //RootNode
   materials:
     importMaterials: 1
