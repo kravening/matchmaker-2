@@ -2,36 +2,26 @@
 using System.Collections;
 
 public class PlayerCollisions : MonoBehaviour {
-
-    void OnCollisionEnter(Collision coll)
+	private Transform currentPlatform;
+    void OnCollisionEnter(Collision other)
     {
-        if (coll.gameObject.tag == Tags.FALLINGPLATFORM)
+		if (other.gameObject.tag == Tags.FALLINGPLATFORM)
         {
-            FallingPlatform fallingPlatform = coll.gameObject.GetComponent<FallingPlatform>();
+			FallingPlatform fallingPlatform = other.gameObject.GetComponent<FallingPlatform>();
             fallingPlatform.Fall();
         }
+		if (other.gameObject.tag == Tags.PLATFORM || other.gameObject.tag == Tags.STICKYPLATFORM)
+		{
+			currentPlatform = other.transform;
+			this.gameObject.transform.parent = other.transform;
+		}
     }
 
-    void OnTriggerEnter(Collider other)
+	void OnCollisionExit(Collision other)
     {
-        
-    }
-
-    void OnTriggerStay(Collider other)
-    {
-		if (other.tag == Tags.PLATFORM || other.tag == Tags.STICKYPLATFORM)
+		if (other.gameObject.tag == Tags.PLATFORM || other.gameObject.tag == Tags.STICKYPLATFORM && other.transform == currentPlatform.transform)
         {
-            transform.parent = other.transform;
+			this.gameObject.transform.parent = null;
         }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-		if (other.tag == Tags.PLATFORM || other.tag == Tags.STICKYPLATFORM)
-        {
-            transform.parent = null;
-        }
-        
-        
     }
 }
