@@ -8,7 +8,7 @@ public class PlayerCollisions : MonoBehaviour {
 		if (other.gameObject.tag == Tags.FALLINGPLATFORM)
         {
 			FallingPlatform fallingPlatform = other.gameObject.GetComponent<FallingPlatform>();
-            fallingPlatform.Fall();
+			fallingPlatform.StartFall();
         }
 		if (other.gameObject.tag == Tags.PLATFORM || other.gameObject.tag == Tags.STICKYPLATFORM)
 		{

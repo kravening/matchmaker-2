@@ -66,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
 	//Vectors
 	Vector3 _playerStartPosition;
 	Vector3 _inAirVelocity = Vector3.zero;
-	Vector3 _objectJumpContactNormal;
+	Vector3 _wallJumpContactNormal;
 	Vector3 _currentTouchingWall;
 	Vector3 _previouslyJumpedFromWall;
 
@@ -84,6 +84,7 @@ public class PlayerMovement : MonoBehaviour
 	bool _isWallJumping;
 	bool _wallJumpedRecently;
 	bool _canSlide = true;
+	bool _isOnIce = false;
 
 	//LayerMasks
 	LayerMask _pushLayers = -1;
@@ -161,6 +162,7 @@ public class PlayerMovement : MonoBehaviour
 		if (_cc.isGrounded) {
 			_currentSmooth = _baseSpeedSmoothing * Time.deltaTime;
 			_wallJumpedRecently = false;
+			_isWallJumping = false;
 		} else {
 			_inAirVelocity += _targetDirection.normalized * Time.deltaTime * _speedInAir;
 		}
@@ -209,10 +211,8 @@ public class PlayerMovement : MonoBehaviour
 
 	void OnControllerColliderHit (ControllerColliderHit hit)
 	{
-		Debug.DrawRay (hit.point, hit.normal);
-		_objectJumpContactNormal = hit.normal;
-
 		if (hit.collider.tag == _jumpFromWallObjectTag) {
+			_wallJumpContactNormal = hit.normal;
 			_canWallJump = true;
 			_currentTouchingWall = hit.gameObject.transform.position;
 		}
@@ -222,12 +222,12 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (_jump && _holdPreviousInput == false  && _canWallJump == true) {
 			_canWallJump = false;
-			if (Math.Abs (_objectJumpContactNormal.y) < 0.2f) { // don't try to jump from the same wall twice
+			if (Math.Abs (_wallJumpContactNormal.y) < 0.2f) { // don't try to jump from the same wall twice
 				_previouslyJumpedFromWall = _currentTouchingWall;
 				_isWallJumping = true;
 				ResetGravity ();
-				_objectJumpContactNormal.y = 0;
-				_moveDirection = _objectJumpContactNormal.normalized;
+				_wallJumpContactNormal.y = 0;
+				_moveDirection = _wallJumpContactNormal.normalized;
 				_moveSpeed = _targetSpeed;
 				_verticalSpeed = 30f; //the jump
 				_wallJumpedRecently = true;
