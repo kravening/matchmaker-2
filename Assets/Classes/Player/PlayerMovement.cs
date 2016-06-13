@@ -37,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
 	float jumpDelayTime = 0.1f;
 
 	//Slide
-	float slideThreshold = 0.88f;
+	float slideThreshold = .95f;
 	float slideControllableSpeed = 5f;
 
 	//Push
@@ -69,6 +69,7 @@ public class PlayerMovement : MonoBehaviour
 	Vector3 _wallJumpContactNormal;
 	Vector3 _currentTouchingWall;
 	Vector3 _previouslyJumpedFromWall;
+	Vector3 _playerScale;
 
 	//Quaternions
 	Quaternion _playerStartRotation;
@@ -83,9 +84,10 @@ public class PlayerMovement : MonoBehaviour
 	bool _canWallJump;
 	bool _isWallJumping;
 	bool _wallJumpedRecently;
-	bool _canSlide = true;
+	bool _isSliding = true;
 	bool _isOnIce = false;
-
+	bool _isMoving = false;
+	bool _isOnStickyPlatform = false;
 	//LayerMasks
 	LayerMask _pushLayers = -1;
 
@@ -96,6 +98,7 @@ public class PlayerMovement : MonoBehaviour
 		_cam = Camera.main.GetComponent<Camera> ();
 		_jumpFromWallObjectTag = Tags.WALL;
 		_slideTag = Tags.SLIDE;
+		_playerScale = transform.localScale;
 	}
 
 	// Update is called once per frame
@@ -107,6 +110,13 @@ public class PlayerMovement : MonoBehaviour
 	public void ProcessInput (Vector2 leftStick, bool aButton)
 	{
 		_axis = leftStick;
+
+		if (_axis.x != 0 || _axis.y != 0) {
+			_isMoving = true;
+		} else {
+			_isMoving = false;
+		}
+
 		_jump = aButton;
 		Movement (_axis);
 	}
@@ -118,13 +128,16 @@ public class PlayerMovement : MonoBehaviour
 		AngleSlide ();
 		UpdateGravity ();
 		JumpCheck ();
+		CheckSurface ();
 		//AngleSlide ();
 
 
 		Vector3 movement = _moveDirection * _moveSpeed + new Vector3 (0, _verticalSpeed, 0) + _inAirVelocity; // stores direction with speed (h,v)
 		movement *= Time.deltaTime;													// delta time for consistent speed
 		if (_moveDirection != Vector3.zero) {
-			transform.rotation = Quaternion.LookRotation (_moveDirection);
+			if (_isMoving) {
+				transform.rotation = Quaternion.LookRotation (_moveDirection);
+			}
 		}
 		collisionFlags = _cc.Move (movement);
 
@@ -151,7 +164,7 @@ public class PlayerMovement : MonoBehaviour
 		Vector3 camForward = _cam.transform.TransformDirection (Vector3.forward);
 		camForward.y = 0;
 		camForward = camForward.normalized;
-		Vector3 right = new Vector3 (camForward.z, camForward.y, -camForward.x);
+		Vector3 right = new Vector3 (camForward.z, 0, -camForward.x);
 		float vertical = -_axis.y; 
 		float horizontal = _axis.x;
 		_targetDirection = horizontal * right + vertical * camForward;
@@ -209,10 +222,10 @@ public class PlayerMovement : MonoBehaviour
 		_currentGravity = 0f;
 	}
 
-	void OnControllerColliderHit (ControllerColliderHit hit)
+	void OnControllerColliderHit (ControllerColliderHit hit) // for walljumping
 	{
 		if (hit.collider.tag == _jumpFromWallObjectTag) {
-			_wallJumpContactNormal = hit.normal;
+			_wallJumpContactNormal = hit.normal;  // used for rotating the player away from the wall
 			_canWallJump = true;
 			_currentTouchingWall = hit.gameObject.transform.position;
 		}
@@ -236,34 +249,41 @@ public class PlayerMovement : MonoBehaviour
 		yield return new WaitForSeconds (.5f); //
 		_isWallJumping = false;
 	}
-
-	void AngleSlide(){ // doesn't do much for now
-		if(_canSlide){
-
+	void AngleSlide(){
+		/*
 			_slideDirection = Vector3.zero;
 			RaycastHit hitInfo;
-			if(Physics.Raycast (transform.position, Vector3.down, out hitInfo)){
+			if (Physics.Raycast (transform.position, Vector3.down, out hitInfo)) {
 
-				if(hitInfo.collider.tag != _slideTag){
+				if (hitInfo.collider.tag != _slideTag) {
 
 					return;
 				}
-				if(hitInfo.normal.y <= slideThreshold){
-
-					_slideDirection = new Vector3 (hitInfo.normal.x,hitInfo.normal.y,hitInfo.normal.y);
+				if (hitInfo.normal.y <= slideThreshold) {
+					_slideDirection = new Vector3 (hitInfo.normal.x, 0, hitInfo.normal.y);
 
 				}
+			_moveDirection += _slideDirection;
 			}
-
 			if (_slideDirection.magnitude < slideControllableSpeed) {
-
-				_moveDirection += _slideDirection;
+				//_moveDirection += _slideDirection;
 			} else {
-				_moveDirection = _slideDirection; // no more control of movement
+				//_moveDirection = _slideDirection; // no more control of movement
 			}
 			if (_slideDirection.magnitude > 0) {
-				_moveSpeed = _slideSpeed;
+				//_moveSpeed = _slideSpeed;
+			}*/
+		}
+	void CheckSurface(){ // could be seperate class
+		RaycastHit hitInfo;
+		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 1.51f)) {
+			if (hitInfo.transform.tag == Tags.STICKYPLATFORM) {
+				_isOnStickyPlatform = true;
+				transform.parent = hitInfo.transform;
+				return;
 			}
 		}
+		_isOnStickyPlatform = false;
+		transform.parent = null;
 	}
 }
