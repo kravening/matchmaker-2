@@ -4,11 +4,12 @@ using System;
 
 public class PlayerMovement : MonoBehaviour {
 	CharacterController _cc;
-
+	CollisionFlags collisionFlags;
 	Camera _cam;
+
+
 	Vector3 _targetDirection;
 	Vector3 _moveDirection = Vector3.zero;
-
 	Vector2 _axis;
 
 	//walk speedvv
@@ -17,24 +18,16 @@ public class PlayerMovement : MonoBehaviour {
 	float _moveSpeed = 0f;
 	float _speedIdleMax = 0.15f;
 	float _speedIdleRotate = 1.2f;
-	float _speedWalk = 3f;
-	float _speedJog = 5f;
-	float _speedRun = 8f;
-	float _speedSprint = 12f;
-	float _speedSlide = 3f;
-	float _speedPush = 1.5f;
-	float _speedGrab = 2f;
-	float _speedJumpFromCrouch = 3f;
-	float _speedJumpFromObject = 10f;
-	float _speedCrouch = 0f;
+
 	float _speedInAir = 1f;
 	float _currentSpeed = 20f;
 	float _currentSmooth;
 
 	//Smoothing values
-	float _baseSpeedSmoothing = 5f;
-	float _baseSpeedRotation = 20f;
-	float _baseSmoothDirection = 10f;
+	float _baseSpeedSmoothing = 2.5f;
+	float _baseSpeedRotation = 10f;
+	float _baseSmoothDirection = 5f;
+	float _baseAirSpeedSmoothing = 10f;
 
 	//Jump
 	float _currentJumpHeight = 0f;
@@ -65,9 +58,10 @@ public class PlayerMovement : MonoBehaviour {
 	float _controllerCenterYDefault;
 	float _currentTime;
 	float _verticalSpeed;
+	float _walljumpDelay = 0.25f;
 
 	//tags
-	string slideTag = "slide"; //TODO use tag from tag class
+	string _slideTag = "slide"; //TODO use tag from tag class
 	string _jumpFromObjectTag = "Wall"; //TODO use tag from tag class
 
 	//Vectors
@@ -83,11 +77,13 @@ public class PlayerMovement : MonoBehaviour {
 	Transform _grabObject = null;
 
 	//Booleans
-	bool jump;
-	bool holdPreviousInput;
+	bool _jump;
+	bool _holdPreviousInput;
+	bool _jumpableObject;
+	bool _isWallJumping;
 
 	//LayerMasks
-	LayerMask pushLayers = -1;
+	LayerMask _pushLayers = -1;
 
 	// Use this for initialization
 	void Start () {
@@ -97,11 +93,12 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		collisionFlags = _cc.collisionFlags;
 	}
 
 	public void ProcessInput(Vector2 leftStick, bool aButton){
 		_axis = leftStick;
-		jump = aButton;
+		_jump = aButton;
 		Movement (_axis);
 	}
 
@@ -109,14 +106,18 @@ public class PlayerMovement : MonoBehaviour {
 		UpdateTargetDirection ();
 		UpdateMoveDirection ();
 		UpdateGravity ();
+		JumpCheck();
+
+
 		Vector3 movement = _moveDirection * _moveSpeed + new Vector3 ( 0, _verticalSpeed, 0 ) + _inAirVelocity; // stores direction with speed (h,v)
 		movement *= Time.deltaTime;													// delta time for consistent speed
-
-		transform.rotation = Quaternion.LookRotation ( _moveDirection );
+		if (_moveDirection != Vector3.zero) {
+			transform.rotation = Quaternion.LookRotation (_moveDirection);
+		}
 		_cc.Move ( movement );
 
 		if (_cc.isGrounded) { 														// character is on the ground (set rotation, translation, direction, speed)
-			_inAirVelocity = new Vector3 (0, -0.1f, 0);								// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth			
+			_inAirVelocity = new Vector3 (0, -0.5f, 0);								// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth			
 			if (_moveSpeed < _speedIdleMax) {												// quick check on movespeed and turn it off (0), if it's
 				_moveSpeed = 0;
 				//idle
@@ -130,7 +131,6 @@ public class PlayerMovement : MonoBehaviour {
 		} else {
 			//player is in the air
 		}
-
 	}		
 
 	void UpdateTargetDirection(){
@@ -144,26 +144,13 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void UpdateMoveDirection(){
-		//if (_targetDirection != Vector3.zero) {
-			
-			/*if(transform.rotation.y == 180 || transform.rotation.y == -180 || transform.rotation.y == 90 || transform.rotation.y == -90 ){
-				int random = Random.Range (0,1);
-				if (random >= 1) {
-					transform.rotation.y += 0.1f;
-				} else {
-					transform.rotation.y -= 0.1f;
-				}
-			}*/
-			//_moveDirection = Vector3.Lerp (_moveDirection, _targetDirection, _baseSmoothDirection * Time.deltaTime);
-		_moveDirection = _targetDirection;
-			_moveDirection = _moveDirection.normalized;
-		//}
-		_currentSmooth = _baseSpeedSmoothing * Time.deltaTime;
-
-		_targetSpeed = Mathf.Min (_targetDirection.magnitude, 1);
-		_moveSpeed = Mathf.Lerp (_moveSpeed, _targetSpeed * _targetDirection.magnitude * _currentSpeed, _currentSmooth);
 		if (_cc.isGrounded) {
+			_moveDirection = _targetDirection;
+			_moveDirection = _moveDirection.normalized;
+			_currentSmooth = _baseSpeedSmoothing * Time.deltaTime;
 
+			_targetSpeed = Mathf.Min (_targetDirection.magnitude, 1);
+			_moveSpeed = Mathf.Lerp (_moveSpeed, _targetSpeed * _targetDirection.magnitude * _currentSpeed, _currentSmooth);
 		} else {
 			_inAirVelocity += _targetDirection.normalized * Time.deltaTime * _speedInAir;
 		}
@@ -171,9 +158,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	void UpdateGravity(){
 		if (_cc.isGrounded) {
-			_verticalSpeed = 0f;
-			_currentGravity = 0f;
-			JumpCheck();
+			ResetGravity ();
 		} else {
 			_currentGravity += _gravityAcceleration * Time.deltaTime;
 			_currentGravity = Mathf.Clamp (_currentGravity, 0, _maxGravity);
@@ -182,11 +167,49 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	void JumpCheck(){
-		if (jump == true && holdPreviousInput == false && _cc.isGrounded) { // get button down
-			holdPreviousInput = true;
-			_verticalSpeed = 25f;
-		} else if(jump == false && holdPreviousInput == true) {
-			holdPreviousInput = false;
+		if (_cc.isGrounded) {
+			Jump ();
+		} else {// walljump
+			WallJump();
 		}
 	}
+
+	void Jump(){
+			if (_jump == true && _holdPreviousInput == false){ // get button down
+				_holdPreviousInput = _jump;
+				_verticalSpeed = 25f; //the jump
+			} else if(_jump == false && _holdPreviousInput == true) {
+				_holdPreviousInput = _jump;
+			}
+
+	}
+
+	void ResetGravity(){
+		_verticalSpeed = 0f;
+		_currentGravity = 0f;
+	}
+
+	void WallJump(){
+		if (_jump && _jumpableObject == true) {
+			_jumpableObject = false;
+			_holdPreviousInput = _jump;
+			_verticalSpeed = 0f;
+			_currentGravity = 0f;
+			if (Math.Abs (_objectJumpContactNormal.y) < 0.2f) {
+				_verticalSpeed = 25f; //the jump
+			}
+		}
+	}
+
+	void OnControllerColliderHit(ControllerColliderHit hit){
+		Debug.DrawRay (hit.point,hit.normal);
+		if (hit.collider.tag == _jumpFromObjectTag) {
+			_jumpableObject = true;
+		} else {
+			_jumpableObject = false;
+		}
+		_objectJumpContactNormal = hit.normal;
+
+	}
+
 }
