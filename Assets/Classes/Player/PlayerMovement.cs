@@ -147,7 +147,6 @@ public class PlayerMovement : MonoBehaviour
 			if (_moveSpeed < _speedIdleMax) {												// quick check on movespeed and turn it off (0), if it's
 				_moveSpeed = 0;
 				_playerAnim.SetBoolParameter ("isIdle",true);
-				_playerAnim.SetBoolParameter ("isJumping", false);
 				//idle
 			} else {
 				_playerAnim.SetBoolParameter ("isIdle",false);
@@ -158,6 +157,7 @@ public class PlayerMovement : MonoBehaviour
 				//more speedchecks for animations
 				//check rotation for lean (relative to camera? & horizontal);
 			}
+			_playerAnim.SetBoolParameter ("isJumping", false);
 		} else {
 			//player is in the air
 		}
