@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
 	CharacterController _cc;
 	CollisionFlags collisionFlags;
 	Camera _cam;
-
+	PlayerAnimation _playerAnim;
 
 	Vector3 _targetDirection;
 	Vector3 _slideDirection;
@@ -99,6 +99,7 @@ public class PlayerMovement : MonoBehaviour
 		_jumpFromWallObjectTag = Tags.WALL;
 		_slideTag = Tags.SLIDE;
 		_playerScale = transform.localScale;
+		_playerAnim = GetComponent<PlayerAnimation> ();
 	}
 
 	// Update is called once per frame
@@ -145,8 +146,12 @@ public class PlayerMovement : MonoBehaviour
 			_inAirVelocity = new Vector3 (0, -0.5f, 0);								// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth			
 			if (_moveSpeed < _speedIdleMax) {												// quick check on movespeed and turn it off (0), if it's
 				_moveSpeed = 0;
+				_playerAnim.SetBoolParameter ("isIdle",true);
+				_playerAnim.SetBoolParameter ("isJumping", false);
 				//idle
 			} else {
+				_playerAnim.SetBoolParameter ("isIdle",false);
+				_playerAnim.SetFloatParameter ("moveSpeed", _moveSpeed);
 				//moving on teh ground
 				//spawn particles
 				//play animation
@@ -204,8 +209,10 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (_cc.isGrounded) {
 			Jump ();
+			return;
 		} else if (!_isWallJumping) {// walljump
 			StartCoroutine ("WallJump");
+			return;
 		}
 	}
 
@@ -213,11 +220,13 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (_jump == true && _holdPreviousInput == false && !_isWallJumping) { // get button down
 			_verticalSpeed = 25f; //the jump
+			_playerAnim.SetBoolParameter("isJumping",true);
 		}
 	}
 
 	void ResetGravity ()
 	{
+		_isWallJumping = false;
 		_verticalSpeed = 0f;
 		_currentGravity = 0f;
 	}
@@ -235,7 +244,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (_jump && _holdPreviousInput == false  && _canWallJump == true) {
 			_canWallJump = false;
-			if (Math.Abs (_wallJumpContactNormal.y) < 0.2f) { // don't try to jump from the same wall twice
+			if (Math.Abs (_wallJumpContactNormal.y) < 0.2f && _previouslyJumpedFromWall != _currentTouchingWall) { // don't try to jump from the same wall twice
 				_previouslyJumpedFromWall = _currentTouchingWall;
 				_isWallJumping = true;
 				ResetGravity ();
@@ -244,9 +253,10 @@ public class PlayerMovement : MonoBehaviour
 				_moveSpeed = _targetSpeed;
 				_verticalSpeed = 30f; //the jump
 				_wallJumpedRecently = true;
+				_playerAnim.SetBoolParameter("isJumping",true);
 			}
 		}
-		yield return new WaitForSeconds (.5f); //
+		yield return new WaitForSeconds (.125f); //
 		_isWallJumping = false;
 	}
 	void AngleSlide(){
