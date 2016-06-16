@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
 	CharacterController _cc;
 	CollisionFlags collisionFlags;
 	Camera _cam;
-	PlayerAnimation _playerAnim;
+	Animator _animator;
 
 	Vector3 _targetDirection;
 	Vector3 _slideDirection;
@@ -16,18 +16,18 @@ public class PlayerMovement : MonoBehaviour
 
 	//walk speedvv
 	float _tempSpeed;
-	float _targetSpeed = 20f;
+	float _targetSpeed = 15f;
 	float _moveSpeed = 0f;
-	float _speedIdleMax = 0.15f;
+	float _speedIdleMax = 0.1f;
 	float _speedIdleRotate = 1.2f;
-	float _slideSpeed = 20f;
+	float _slideSpeed = 15f;
 
 	float _speedInAir = 1f;
-	float _currentSpeed = 20f;
+	float _currentSpeed = 15f;
 	float _currentSmooth;
 
 	//Smoothing values
-	float _baseSpeedSmoothing = 10f;
+	float _baseSpeedSmoothing = 20f;
 	float _baseRotationSmoothing = 15f;
 	float _baseAirSpeedSmoothing = 5;
 
@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
 	//gravity
 	float _currentGravity;
-	float _maxGravity = 50f;
+	float _maxGravity = 40f;
 	float _gravityAcceleration = 50f;
 
 	//---------------------------------------------------------
@@ -56,11 +56,15 @@ public class PlayerMovement : MonoBehaviour
 	float _currentTime;
 	float _verticalSpeed;
 	float _walljumpDelay = 0.25f;
+	float _animSpeed;
+	float _animSpeedMultiplier = 3;
 
 	//tags
 	string _slideTag;
+
 	//TODO use tag from tag class
 	string _jumpFromWallObjectTag;
+
 	//TODO use tag from tag class
 
 	//Vectors
@@ -88,6 +92,7 @@ public class PlayerMovement : MonoBehaviour
 	bool _isOnIce = false;
 	bool _isMoving = false;
 	bool _isOnStickyPlatform = false;
+	bool _onSlide = false;
 	//LayerMasks
 	LayerMask _pushLayers = -1;
 
@@ -99,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
 		_jumpFromWallObjectTag = Tags.WALL;
 		_slideTag = Tags.SLIDE;
 		_playerScale = transform.localScale;
-		_playerAnim = GetComponent<PlayerAnimation> ();
+		_animator = GetComponent<Animator> ();
 	}
 
 	// Update is called once per frame
@@ -129,7 +134,6 @@ public class PlayerMovement : MonoBehaviour
 		AngleSlide ();
 		UpdateGravity ();
 		JumpCheck ();
-		CheckSurface ();
 		//AngleSlide ();
 
 
@@ -141,24 +145,27 @@ public class PlayerMovement : MonoBehaviour
 			}
 		}
 		collisionFlags = _cc.Move (movement);
-
+		_animator.SetBool ("isOnGround", _cc.isGrounded);
 		if (_cc.isGrounded) { 														// character is on the ground (set rotation, translation, direction, speed)
-			_inAirVelocity = new Vector3 (0, -0.5f, 0);								// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth			
+			_inAirVelocity = new Vector3 (0, -0.5f, 0);							// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth
+			_animator.SetBool ("isIdle",false);
 			if (_moveSpeed < _speedIdleMax) {												// quick check on movespeed and turn it off (0), if it's
 				_moveSpeed = 0;
-				_playerAnim.SetBoolParameter ("isIdle",true);
+				_animator.SetBool ("isIdle",true);
 				//idle
 			} else {
-				_playerAnim.SetBoolParameter ("isIdle",false);
-				_playerAnim.SetFloatParameter ("moveSpeed", _moveSpeed);
+				_animSpeed = (_moveSpeed / _currentSpeed) * _animSpeedMultiplier;
+				_animator.SetFloat ("moveSpeed", _moveSpeed);
+				_animator.SetFloat ("animSpeed", _animSpeed);
 				//moving on teh ground
 				//spawn particles
 				//play animation
 				//more speedchecks for animations
 				//check rotation for lean (relative to camera? & horizontal);
 			}
-			_playerAnim.SetBoolParameter ("isJumping", false);
+			_animator.SetBool ("isJumping", false);
 		} else {
+			_animator.SetBool ("isIdle",false);
 			//player is in the air
 		}
 		_holdPreviousInput = _jump;
@@ -220,7 +227,7 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (_jump == true && _holdPreviousInput == false && !_isWallJumping) { // get button down
 			_verticalSpeed = 25f; //the jump
-			_playerAnim.SetBoolParameter("isJumping",true);
+			StartCoroutine ("SetJumpAnim");
 		}
 	}
 
@@ -253,47 +260,45 @@ public class PlayerMovement : MonoBehaviour
 				_moveSpeed = _targetSpeed;
 				_verticalSpeed = 30f; //the jump
 				_wallJumpedRecently = true;
-				_playerAnim.SetBoolParameter("isJumping",true);
+				StartCoroutine ("SetJumpAnim");
 			}
 		}
 		yield return new WaitForSeconds (.125f); //
 		_isWallJumping = false;
 	}
-	void AngleSlide(){
-		/*
+
+	IEnumerator SetJumpAnim(){
+		_animator.SetBool("once",true);
+		_animator.SetBool ("isJumping",true);
+		yield return new WaitForSeconds (.15f);
+		_animator.SetBool("once",false);
+		yield return new WaitForSeconds (.75f);
+		_animator.SetBool("isJumping",false);
+	
+
+	}
+	void AngleSlide(){/*
 			_slideDirection = Vector3.zero;
 			RaycastHit hitInfo;
-			if (Physics.Raycast (transform.position, Vector3.down, out hitInfo)) {
+		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 3f)) {
 
-				if (hitInfo.collider.tag != _slideTag) {
-
-					return;
+				if (hitInfo.normal.y <= slideThreshold && hitInfo.collider.tag == _slideTag) {
+				
+				}else{
+					_slideDirection = new Vector3 (0, 0, 0);
+					//return;
 				}
-				if (hitInfo.normal.y <= slideThreshold) {
-					_slideDirection = new Vector3 (hitInfo.normal.x, 0, hitInfo.normal.y);
-
-				}
-			_moveDirection += _slideDirection;
-			}
-			if (_slideDirection.magnitude < slideControllableSpeed) {
 				//_moveDirection += _slideDirection;
+			}
+
+			if (_slideDirection.magnitude < slideControllableSpeed) {
+				_moveDirection += _slideDirection;
 			} else {
-				//_moveDirection = _slideDirection; // no more control of movement
+				_moveDirection = _slideDirection; // no more control of movement
 			}
 			if (_slideDirection.magnitude > 0) {
-				//_moveSpeed = _slideSpeed;
+				_moveSpeed = _slideSpeed;
 			}*/
 		}
-	void CheckSurface(){ // could be seperate class
-		RaycastHit hitInfo;
-		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 1.51f)) {
-			if (hitInfo.transform.tag == Tags.STICKYPLATFORM) {
-				_isOnStickyPlatform = true;
-				transform.parent = hitInfo.transform;
-				return;
-			}
-		}
-		_isOnStickyPlatform = false;
-		transform.parent = null;
-	}
+
 }
