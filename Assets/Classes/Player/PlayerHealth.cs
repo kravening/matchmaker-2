@@ -29,5 +29,6 @@ public class PlayerHealth : MonoBehaviour {
         {
             //Game over screen
         }
+        Debug.Log(_currentHealth);
     }
 }

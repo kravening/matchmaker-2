@@ -8,37 +8,24 @@ public class Checkpoints : MonoBehaviour {
     private Transform _activeCheckpoint;
     private int _index;
 
-    
-	// Use this for initialization
-	void Start () {
-
-	}
-	
-	// Update is called once per frame
 	void Update () {
-        
+        CompareTransform();
 	}
 
-    public void CompareTransform(Transform checkpoint)
+    public void CompareTransform()
     {
         for (int i = 0; i < _checkpoints.Count; i++)
         {
-            if (checkpoint == _checkpoints[i])
+            if (Vector3.Distance(transform.position, _checkpoints[i].position) <= 10)
             {
                 _activeCheckpoint = _checkpoints[i];
-                Debug.Log("Active checkpoint : " + _activeCheckpoint);
-                return;
+                Debug.Log("Checkpoint " + _checkpoints[i]);
             }
         }
     }
 
-    public void GoToCheckpoint()
+    public void GoToCheckpoint() //Makes player go to respawn point
     {
         transform.position = _activeCheckpoint.position;
-    }
-
-    void ActivateCheckpoints()
-    {
-        _activeCheckpoint = _checkpoints[_index];
     }
 }
