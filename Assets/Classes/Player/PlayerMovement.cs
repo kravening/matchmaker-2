@@ -167,6 +167,7 @@ public class PlayerMovement : MonoBehaviour
 				//check rotation for lean (relative to camera? & horizontal);
 			}
 			_animator.SetBool ("isJumping", false);
+			_previouslyJumpedFromWall = new Vector3 (0,0,0);
 		} else {
 			_animator.SetBool ("isIdle",false);
 			//player is in the air
