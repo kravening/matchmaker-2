@@ -1,57 +1,32 @@
 fileFormatVersion: 2
-guid: 9cc5caa47dd7b95439d0acdb368a65a3
-timeCreated: 1465812176
+guid: 66de8f8b0992cd146ad40cc461bd262c
+timeCreated: 1465916238
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: //RootNode
-    100002: Cube
-    100004: Cube_1
-    100006: Cube_2
-    100008: Cube_2_2
-    100010: Cube_3
-    100012: Cube_3_2
-    100014: Cube_4
-    100016: Cube_5
-    100018: Cube_6
-    400000: //RootNode
-    400002: Cube
-    400004: Cube_1
-    400006: Cube_2
-    400008: Cube_2_2
-    400010: Cube_3
-    400012: Cube_3_2
-    400014: Cube_4
-    400016: Cube_5
-    400018: Cube_6
-    2300000: Cube
-    2300002: Cube_1
-    2300004: Cube_2
-    2300006: Cube_2_2
-    2300008: Cube_3
-    2300010: Cube_3_2
-    2300012: Cube_4
-    2300014: Cube_5
-    2300016: Cube_6
-    3300000: Cube
-    3300002: Cube_1
-    3300004: Cube_2
-    3300006: Cube_2_2
-    3300008: Cube_3
-    3300010: Cube_3_2
-    3300012: Cube_4
-    3300014: Cube_5
-    3300016: Cube_6
-    4300000: Cube_3
-    4300002: Cube_3_2
-    4300004: Cube_1
-    4300006: Cube
-    4300008: Cube_2
-    4300010: Cube_2_2
-    4300012: Cube_4
-    4300014: Cube_5
-    4300016: Cube_6
+    100000: Cone
+    100002: //RootNode
+    100004: Sphere
+    100006: Sphere_1
+    100008: Sphere_2
+    400000: Cone
+    400002: //RootNode
+    400004: Sphere
+    400006: Sphere_1
+    400008: Sphere_2
+    2300000: Cone
+    2300002: Sphere
+    2300004: Sphere_1
+    2300006: Sphere_2
+    3300000: Cone
+    3300002: Sphere
+    3300004: Sphere_1
+    3300006: Sphere_2
+    4300000: Cone
+    4300002: Sphere_2
+    4300004: Sphere_1
+    4300006: Sphere
     9500000: //RootNode
   materials:
     importMaterials: 1
