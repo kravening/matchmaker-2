@@ -14,8 +14,21 @@ public class PlayerRespawn : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        Respawn();
 	}
+
+    void Respawn()
+    {
+        RaycastHit hitInfo;
+
+        if (Physics.Raycast(transform.position, Vector3.down, out hitInfo, 1f))
+        {
+            if (hitInfo.collider.tag == Tags.ABYSS)
+            {
+                StartCoroutine(DeathTimer());
+            }
+        }
+    }
 
     IEnumerator DeathTimer()
     {
