@@ -3,7 +3,8 @@ using System.Collections;
 
 public class PlayerCollisions : MonoBehaviour {
 	private Vector3 _collidingObjectPos;
-	void Update(){
+	
+    void Update(){
 		RaycastHit hitInfo;
 		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 1f) && _collidingObjectPos != hitInfo.transform.position) { // makeshift onCollisionEnter
 			_collidingObjectPos = hitInfo.transform.position;
