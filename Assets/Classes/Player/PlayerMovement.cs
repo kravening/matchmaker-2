@@ -29,7 +29,8 @@ public class PlayerMovement : MonoBehaviour
 	//Smoothing values
 	float _baseSpeedSmoothing = 20f;
 	float _baseRotationSmoothing = 15f;
-	float _baseAirSpeedSmoothing = 5;
+	float _currentSpeedSmoothing;
+	float _currentRotationSmoothing;
 
 	//Jump
 	float _currentJumpHeight = 0f;
@@ -57,7 +58,8 @@ public class PlayerMovement : MonoBehaviour
 	float _verticalSpeed;
 	float _walljumpDelay = 0.25f;
 	float _animSpeed;
-	float _animSpeedMultiplier = 3;
+	float _baseAnimSpeedMultiplier = 3;
+	float _animSpeedMultiplier;
 
 	//tags
 	string _slideTag;
@@ -129,6 +131,7 @@ public class PlayerMovement : MonoBehaviour
 
 	void Movement (Vector2 moveDir)
 	{
+		SurfaceCheck ();
 		UpdateTargetDirection ();
 		UpdateMoveDirection ();
 		AngleSlide ();
@@ -185,7 +188,7 @@ public class PlayerMovement : MonoBehaviour
 	void UpdateMoveDirection ()
 	{
 		if (_cc.isGrounded) {
-			_currentSmooth = _baseSpeedSmoothing * Time.deltaTime;
+			_currentSmooth = _currentSpeedSmoothing * Time.deltaTime;
 			_wallJumpedRecently = false;
 			_isWallJumping = false;
 		} else {
@@ -193,7 +196,7 @@ public class PlayerMovement : MonoBehaviour
 		}
 
 		if (!_wallJumpedRecently) { // rotate and move in air and ground, but can't rotate or move while walljumping (just time your jumps right)
-			_moveDirection = Vector3.Lerp ( _moveDirection, _targetDirection, _baseRotationSmoothing * Time.deltaTime );
+			_moveDirection = Vector3.Lerp ( _moveDirection, _targetDirection, _currentRotationSmoothing * Time.deltaTime );
 			_moveDirection = _moveDirection.normalized;
 
 			_targetSpeed = Mathf.Min (_targetDirection.magnitude, 1);
@@ -258,7 +261,7 @@ public class PlayerMovement : MonoBehaviour
 				_wallJumpContactNormal.y = 0;
 				_moveDirection = _wallJumpContactNormal.normalized;
 				_moveSpeed = _targetSpeed;
-				_verticalSpeed = 30f; //the jump
+				_verticalSpeed = 30f;
 				_wallJumpedRecently = true;
 				StartCoroutine ("SetJumpAnim");
 			}
@@ -300,5 +303,19 @@ public class PlayerMovement : MonoBehaviour
 				_moveSpeed = _slideSpeed;
 			}*/
 		}
+	void SurfaceCheck(){
+		RaycastHit hitInfo;
+		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 3f)) {
+			if (hitInfo.collider.tag == Tags.ICEFLOOR) {
+				_currentRotationSmoothing = 4;
+				_currentSpeedSmoothing = 1;
+				_animSpeedMultiplier = _baseAnimSpeedMultiplier / 2;
+			} else {
+				_animSpeedMultiplier = _baseAnimSpeedMultiplier;
+				_currentRotationSmoothing = _baseRotationSmoothing;
+				_currentSpeedSmoothing = _baseSpeedSmoothing;
+			}
+		}
+	}
 
 }

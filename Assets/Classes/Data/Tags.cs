@@ -9,6 +9,10 @@ public class Tags : MonoBehaviour {
     public const string STICKYPLATFORM = "StickyPlatform";
     public const string WALL = "Wall";
     public const string SLIDE = "Slide";
+<<<<<<< HEAD
     public const string ABYSS = "Abyss";
+=======
+	public const string ICEFLOOR = "Ice";
+>>>>>>> 16b08810d2557b02e500c0808428483648fb6240
 
 }

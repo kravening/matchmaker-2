@@ -1,7 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/OBJExport.meta
 guid: 72f8ac2bed0041847849826632778c62
 folderAsset: yes
 timeCreated: 1466165550
+=======
+guid: c0f98e9c56effc84ebbf6d75f2dd0e8e
+folderAsset: yes
+timeCreated: 1466067327
+>>>>>>> 16b08810d2557b02e500c0808428483648fb6240:Assets/OBJExport.meta
 licenseType: Free
 DefaultImporter:
   userData: 
