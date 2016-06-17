@@ -2,36 +2,34 @@
 using System.Collections;
 
 public class PlayerCollisions : MonoBehaviour {
-
-    void OnCollisionEnter(Collision coll)
+	private Transform currentPlatform;
+	void OnCollisionEnter(Collision coll)
     {
-        if (coll.gameObject.tag == Tags.FALLINGPLATFORM)
+		Debug.Log (coll.gameObject.tag);
+		if (coll.gameObject.tag == Tags.FALLINGPLATFORM)
         {
-            FallingPlatform fallingPlatform = coll.gameObject.GetComponent<FallingPlatform>();
-            fallingPlatform.Fall();
+			FallingPlatform fallingPlatform = coll.gameObject.GetComponent<FallingPlatform>();
+			fallingPlatform.StartFall();
+        }
+		if (coll.gameObject.tag == Tags.PLATFORM || coll.gameObject.tag == Tags.STICKYPLATFORM)
+		{
+			currentPlatform = coll.transform;
+			this.gameObject.transform.parent = coll.transform;
+		}
+    }
+
+	void OnCollisionExit(Collision coll)
+    {
+		if (coll.gameObject.tag == Tags.PLATFORM || coll.gameObject.tag == Tags.STICKYPLATFORM && coll.transform == currentPlatform.transform)
+        {
+			this.gameObject.transform.parent = null;
         }
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        
-    }
-
-    void OnTriggerStay(Collider other)
-    {
-		if (other.tag == Tags.PLATFORM || other.tag == Tags.STICKYPLATFORM)
-        {
-            transform.parent = other.transform;
-        }
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-		if (other.tag == Tags.PLATFORM || other.tag == Tags.STICKYPLATFORM)
-        {
-            transform.parent = null;
-        }
-        
-        
-    }
+	void OnControllerColliderHit(ControllerColliderHit hit){ // works kinda but there is no Exit equivalent
+		if (hit.gameObject.tag == Tags.STICKYPLATFORM) {
+			currentPlatform = hit.transform;
+			this.gameObject.transform.parent = hit.transform;
+		}
+	}
 }
