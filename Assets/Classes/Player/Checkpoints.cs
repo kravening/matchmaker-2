@@ -16,7 +16,7 @@ public class Checkpoints : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        
 	}
 
     public void CompareTransform(Transform checkpoint)
@@ -26,6 +26,7 @@ public class Checkpoints : MonoBehaviour {
             if (checkpoint == _checkpoints[i])
             {
                 _activeCheckpoint = _checkpoints[i];
+                Debug.Log("Active checkpoint : " + _activeCheckpoint);
                 return;
             }
         }

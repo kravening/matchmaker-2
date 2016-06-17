@@ -32,8 +32,10 @@ public class PlayerRespawn : MonoBehaviour {
 
     IEnumerator DeathTimer()
     {
+        Debug.Log("Respawning");
         //Spawn particle
         yield return new WaitForSeconds(_delayTimer);
+        Debug.Log("Respawned");
         _playerHealth.DecreaseHealth();
         _checkpoints.GoToCheckpoint();        
     }
