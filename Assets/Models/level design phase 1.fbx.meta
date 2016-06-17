@@ -91,6 +91,10 @@ ModelImporter:
     100166: pCylinder9
     100168: pSphere1
     100170: pSphere2
+    100172: group
+    100174: group2
+    100176: level_islands:Group1
+    100178: level_islands:ZBrush_defualt_group
     400000: //RootNode
     400002: pCube1
     400004: pCube10
@@ -177,6 +181,10 @@ ModelImporter:
     400166: pCylinder9
     400168: pSphere1
     400170: pSphere2
+    400172: group
+    400174: group2
+    400176: level_islands:Group1
+    400178: level_islands:ZBrush_defualt_group
     2300000: pCube1
     2300002: pCube10
     2300004: pCube11
@@ -262,6 +270,8 @@ ModelImporter:
     2300164: pCylinder9
     2300166: pSphere1
     2300168: pSphere2
+    2300170: level_islands:Group1
+    2300172: level_islands:ZBrush_defualt_group
     3300000: pCube1
     3300002: pCube10
     3300004: pCube11
@@ -347,6 +357,8 @@ ModelImporter:
     3300164: pCylinder9
     3300166: pSphere1
     3300168: pSphere2
+    3300170: level_islands:Group1
+    3300172: level_islands:ZBrush_defualt_group
     4300000: pCube40
     4300002: pCube39
     4300004: pCube25
@@ -432,6 +444,8 @@ ModelImporter:
     4300164: pCube43
     4300166: pCube42
     4300168: pCube41
+    4300170: level_islands:ZBrush_defualt_group
+    4300172: level_islands:Group1
     9500000: //RootNode
   materials:
     importMaterials: 1
