@@ -38,7 +38,6 @@ public class FallingPlatform : MonoBehaviour {
     IEnumerator FallRoutine()
     {
         //_platformAnim.Play("Rumble");
-        Debug.Log("Falling");
         yield return new WaitForSeconds(0.5f);
         _falling = true;
         //_platformAnim.Play("Idle");

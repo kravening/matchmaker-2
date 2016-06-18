@@ -133,10 +133,15 @@ public class PlayerMovement : MonoBehaviour
 	{
 		SurfaceCheck ();
 		UpdateTargetDirection ();
+		SurfaceCheck ();
 		UpdateMoveDirection ();
+		SurfaceCheck ();
 		AngleSlide ();
+		SurfaceCheck ();
 		UpdateGravity ();
+		SurfaceCheck ();
 		JumpCheck ();
+		SurfaceCheck ();
 		//AngleSlide ();
 
 
@@ -306,8 +311,8 @@ public class PlayerMovement : MonoBehaviour
 		}
 	void SurfaceCheck(){
 		RaycastHit hitInfo;
-		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 3f)) {
-			if (hitInfo.collider.tag == Tags.ICEFLOOR) {
+		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 4f)) {
+			if (hitInfo.collider.tag == Tags.ICEFLOOR && _cc.isGrounded) {
 				_currentRotationSmoothing = 4;
 				_currentSpeedSmoothing = 1;
 				_animSpeedMultiplier = _baseAnimSpeedMultiplier / 2;
