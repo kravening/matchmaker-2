@@ -14,13 +14,14 @@ public class PlayerMovement : MonoBehaviour
 	Vector3 _moveDirection = Vector3.zero;
 	Vector2 _axis;
 
-	//walk behaviour values
+	//walk speedvv
 	float _tempSpeed;
 	float _targetSpeed = 15f;
 	float _moveSpeed = 0f;
 	float _speedIdleMax = 0.1f;
 	float _speedIdleRotate = 1.2f;
 	float _slideSpeed = 15f;
+
 	float _speedInAir = 1f;
 	float _currentSpeed = 15f;
 	float _currentSmooth;
@@ -51,30 +52,60 @@ public class PlayerMovement : MonoBehaviour
 	//---------------------------------------------------------
 
 	//Floats
+	float _controllerHeightDefault;
+	float _controllerCenterYDefault;
+	float _currentTime;
 	float _verticalSpeed;
+	float _walljumpDelay = 0.25f;
 	float _animSpeed;
 	float _baseAnimSpeedMultiplier = 3;
 	float _animSpeedMultiplier;
 
+	//tags
+	string _slideTag;
+
+	//TODO use tag from tag class
+	string _jumpFromWallObjectTag;
+
+	//TODO use tag from tag class
+
 	//Vectors
+	Vector3 _playerStartPosition;
 	Vector3 _inAirVelocity = Vector3.zero;
 	Vector3 _wallJumpContactNormal;
 	Vector3 _currentTouchingWall;
 	Vector3 _previouslyJumpedFromWall;
+	Vector3 _playerScale;
+
+	//Quaternions
+	Quaternion _playerStartRotation;
+
+	//Transforms
+	Transform _pushObject = null;
+	Transform _grabObject = null;
 
 	//Booleans
 	bool _jump;
-	bool _holdPreviousJumpInput;
+	bool _holdPreviousInput;
 	bool _canWallJump;
 	bool _isWallJumping;
 	bool _wallJumpedRecently;
+	bool _isSliding = true;
+	bool _isOnIce = false;
 	bool _isMoving = false;
+	bool _isOnStickyPlatform = false;
+	bool _onSlide = false;
+	//LayerMasks
+	LayerMask _pushLayers = -1;
 
 	// Use this for initialization
 	void Start ()
 	{
 		_cc = GetComponent<CharacterController> ();
 		_cam = Camera.main.GetComponent<Camera> ();
+		_jumpFromWallObjectTag = Tags.WALL;
+		_slideTag = Tags.SLIDE;
+		_playerScale = transform.localScale;
 		_animator = GetComponent<Animator> ();
 	}
 
@@ -109,8 +140,8 @@ public class PlayerMovement : MonoBehaviour
 		//AngleSlide ();
 
 
-		Vector3 movement = _moveDirection * _moveSpeed + new Vector3 (0, _verticalSpeed, 0) + _inAirVelocity;	// stores direction with speed (h,v)
-		movement *= Time.deltaTime;																				// delta time for consistent speed
+		Vector3 movement = _moveDirection * _moveSpeed + new Vector3 (0, _verticalSpeed, 0) + _inAirVelocity; // stores direction with speed (h,v)
+		movement *= Time.deltaTime;													// delta time for consistent speed
 		if (_moveDirection != Vector3.zero) {
 			if (_isMoving) {
 				transform.rotation = Quaternion.LookRotation (_moveDirection);
@@ -118,10 +149,10 @@ public class PlayerMovement : MonoBehaviour
 		}
 		collisionFlags = _cc.Move (movement);
 		_animator.SetBool ("isOnGround", _cc.isGrounded);
-		if (_cc.isGrounded) { 																					// character is on the ground (set rotation, translation, direction, speed)
-			_inAirVelocity = new Vector3 (0, -0.5f, 0);															// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth
+		if (_cc.isGrounded) { 														// character is on the ground (set rotation, translation, direction, speed)
+			_inAirVelocity = new Vector3 (0, -0.5f, 0);							// turn off check on velocity, set to zero/// current set to -.1 because zero won't keep him on isGrounded true. goes back and forth
 			_animator.SetBool ("isIdle",false);
-			if (_moveSpeed < _speedIdleMax) {																	// quick check on movespeed and turn it off (0), if it's
+			if (_moveSpeed < _speedIdleMax) {												// quick check on movespeed and turn it off (0), if it's
 				_moveSpeed = 0;
 				_animator.SetBool ("isIdle",true);
 				//idle
@@ -136,12 +167,11 @@ public class PlayerMovement : MonoBehaviour
 				//check rotation for lean (relative to camera? & horizontal);
 			}
 			_animator.SetBool ("isJumping", false);
-			_previouslyJumpedFromWall = new Vector3 (0,0,0);
 		} else {
 			_animator.SetBool ("isIdle",false);
 			//player is in the air
 		}
-		_holdPreviousJumpInput = _jump;
+		_holdPreviousInput = _jump;
 	}
 
 	void UpdateTargetDirection ()
@@ -198,7 +228,7 @@ public class PlayerMovement : MonoBehaviour
 
 	void Jump ()
 	{
-		if (_jump == true && _holdPreviousJumpInput == false && !_isWallJumping) { // get button down
+		if (_jump == true && _holdPreviousInput == false && !_isWallJumping) { // get button down
 			_verticalSpeed = 25f; //the jump
 			StartCoroutine ("SetJumpAnim");
 		}
@@ -213,7 +243,7 @@ public class PlayerMovement : MonoBehaviour
 
 	void OnControllerColliderHit (ControllerColliderHit hit) // for walljumping
 	{
-		if (hit.collider.tag == Tags.WALL) {
+		if (hit.collider.tag == _jumpFromWallObjectTag) {
 			_wallJumpContactNormal = hit.normal;  // used for rotating the player away from the wall
 			_canWallJump = true;
 			_currentTouchingWall = hit.gameObject.transform.position;
@@ -222,7 +252,7 @@ public class PlayerMovement : MonoBehaviour
 
 	IEnumerator WallJump ()
 	{
-		if (_jump && _holdPreviousJumpInput == false  && _canWallJump == true) {
+		if (_jump && _holdPreviousInput == false  && _canWallJump == true) {
 			_canWallJump = false;
 			if (Math.Abs (_wallJumpContactNormal.y) < 0.2f && _previouslyJumpedFromWall != _currentTouchingWall) { // don't try to jump from the same wall twice
 				_previouslyJumpedFromWall = _currentTouchingWall;
@@ -250,7 +280,7 @@ public class PlayerMovement : MonoBehaviour
 	
 
 	}
-	void AngleSlide(){/* works but is a bit buggy due to not factoring in the camera vector
+	void AngleSlide(){/*
 			_slideDirection = Vector3.zero;
 			RaycastHit hitInfo;
 		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 3f)) {
@@ -275,8 +305,8 @@ public class PlayerMovement : MonoBehaviour
 		}
 	void SurfaceCheck(){
 		RaycastHit hitInfo;
-		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 4f)) {
-			if (hitInfo.collider.tag == Tags.ICEFLOOR && _cc.isGrounded) {
+		if (Physics.Raycast (transform.position, Vector3.down, out hitInfo, 3f)) {
+			if (hitInfo.collider.tag == Tags.ICEFLOOR) {
 				_currentRotationSmoothing = 4;
 				_currentSpeedSmoothing = 1;
 				_animSpeedMultiplier = _baseAnimSpeedMultiplier / 2;

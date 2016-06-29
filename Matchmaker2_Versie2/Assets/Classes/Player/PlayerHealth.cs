@@ -7,16 +7,8 @@ public class PlayerHealth : MonoBehaviour {
     [SerializeField]private float _maxHealth;
                     private float _currentHealth;
 
-
-
-	// Use this for initialization
 	void Start () {
         _currentHealth = _maxHealth;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
 	}
 
     public void DecreaseHealth()
@@ -29,6 +21,5 @@ public class PlayerHealth : MonoBehaviour {
         {
             //Game over screen
         }
-        Debug.Log(_currentHealth);
     }
 }

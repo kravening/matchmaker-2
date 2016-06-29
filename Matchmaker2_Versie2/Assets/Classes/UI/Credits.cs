@@ -3,11 +3,11 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class Credits : MonoBehaviour {
-    [SerializeField]private Text _creditsText;
-                    private Animator _creditsAnim;
+    [SerializeField]private Text        _creditsText;
+                    private Animator    _creditsAnim;
 
-	void Start () {
-
+	void Start () 
+    {
         _creditsAnim = GetComponent<Animator>();
         StartCoroutine(CreditsUI());
 	}

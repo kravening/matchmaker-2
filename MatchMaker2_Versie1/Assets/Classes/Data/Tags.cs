@@ -11,4 +11,5 @@ public class Tags : MonoBehaviour {
     public const string SLIDE           = "Slide";
     public const string ABYSS           = "Abyss";
 	public const string ICEFLOOR        = "Ice";
+
 }

@@ -2,8 +2,7 @@
 using System.Collections;
 
 public class PlayerCollector : MonoBehaviour {
-    [SerializeField]private Collectible _collectableManager;
-    [SerializeField]private float       _delayTimer;
+    [SerializeField] private Collectible collectableManager;
 
 	// Use this for initialization
 	void Start () {
@@ -18,14 +17,8 @@ public class PlayerCollector : MonoBehaviour {
     {
         if (other.transform.tag == "Collectable")
         {
-            StartCoroutine(PickupRoutine(other.gameObject));
+            collectableManager.AddCollectable();
+            Destroy(other.gameObject);
         }
-    }
-
-    IEnumerator PickupRoutine(GameObject collectible)
-    {
-        yield return new WaitForSeconds(_delayTimer);
-        _collectableManager.AddCollectable();
-        Destroy(collectible);
     }
 }
