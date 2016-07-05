@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Matchmaker_Platformer.CSharp.Plugins", "Matchmaker_Platformer.CSharp.Plugins.csproj", "{E0EAFFA8-CD87-13C1-4F62-42E1726014D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Matchmaker_Platformer.CSharp", "Matchmaker_Platformer.CSharp.csproj", "{70939775-B681-332B-ADD6-F4CE6FD67B41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Matchmaker_Platformer.CSharp.Editor", "Matchmaker_Platformer.CSharp.Editor.csproj", "{DDEACD30-B953-744F-DE23-A71380C9AE69}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E0EAFFA8-CD87-13C1-4F62-42E1726014D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0EAFFA8-CD87-13C1-4F62-42E1726014D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0EAFFA8-CD87-13C1-4F62-42E1726014D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0EAFFA8-CD87-13C1-4F62-42E1726014D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70939775-B681-332B-ADD6-F4CE6FD67B41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70939775-B681-332B-ADD6-F4CE6FD67B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70939775-B681-332B-ADD6-F4CE6FD67B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70939775-B681-332B-ADD6-F4CE6FD67B41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDEACD30-B953-744F-DE23-A71380C9AE69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDEACD30-B953-744F-DE23-A71380C9AE69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDEACD30-B953-744F-DE23-A71380C9AE69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDEACD30-B953-744F-DE23-A71380C9AE69}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
